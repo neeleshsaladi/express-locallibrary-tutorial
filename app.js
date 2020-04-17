@@ -1,13 +1,15 @@
 var createError = require('http-errors');
 var express = require('express');
+const dotenv = require('dotenv');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
+const catalogRouter = require('./routes/catalog');
 var app = express();
+dotenv.config({path: '.env'});
 //Set up mongoose connection
 var mongoose = require('mongoose');
 var mongoDB = 'mongodb+srv://neeleshsa:webappsusing@cluster0-mnph0.gcp.mongodb.net/local_library?retryWrites=true&w=majority';
@@ -27,6 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/catalog', catalogRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
