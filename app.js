@@ -3,25 +3,27 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const dotenv = require('dotenv')
+
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
-const catalogRouter = require('./routes/catalog'); 
+const catalogRouter = require('./routes/catalog');  //Import routes for "catalog" area of site
+
 const compression = require('compression');
-const dotenv = require('dotenv')
 const helmet = require('helmet');
 
-//setting up database
 const app = express();
-app.use(helmet());
 dotenv.config({ path: '.env' })
-const mongoose = require('mongoose');
 
-const dev_db_url = process.env.ATLAS_URI
+// Set up mongoose connection
+const mongoose = require('mongoose');
+const dev_db_url = 'mongodb+srv://swaroopatirumalareddy:Swaroopa@f7@cluster0-vgjt3.azure.mongodb.net/local_library?retryWrites=true&w=majority';
 const mongoDB = process.env.MONGODB_URI || dev_db_url;
-mongoose.connect(mongoDB, { useNewUrlParser: true });
+mongoose.connect(mongoDB, { useNewUrlParser: true , useUnifiedTopology: true});
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -31,13 +33,14 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(compression());
+app.use(helmet());
+app.use(compression()); // Compress all routes
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/catalog', catalogRouter);
-
+app.use('/catalog', catalogRouter);  // Add catalog routes to middleware chain.
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

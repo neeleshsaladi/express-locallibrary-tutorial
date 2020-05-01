@@ -2,17 +2,15 @@ extends layout
 
 block content
 
-  h1 Genre: #{genre.name}
-  
-  div(style='margin-left:20px;margin-top:20px')
+  h1 #{title}
+          
+  form(method='POST' action='')
+    div.form-group
+      label(for='name') Genre:
+      input#name.form-control(type='text', placeholder='Fantasy, Poetry etc.' name='name' required='true' value=(undefined===genre ? '' : genre.name) )
+    button.btn.btn-primary(type='submit') Submit
 
-    h4 Books
-    
-    dl
-      each book in genre_books
-        dt 
-          a(href=book.url) #{book.title}
-        dd #{book.summary}
-
-      else
-        p This genre has no books
+  if errors 
+    ul
+      for error in errors
+        li!= error.msg
